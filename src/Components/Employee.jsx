@@ -1,27 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState ,useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { toast } from "react-toastify";
 
 
 function Employee() {
 
-    const employeeInfo=[
-        {
-          "id": 1,
-          "name": "John Doe",
-          "email": "johndoe@example.com"
-        },
-        {
-          "id": 2,
-          "name": "Jane Smith",
-          "email": "janesmith@example.com"
-        },
-        {
-          "id": 3,
-          "name": "Alice Johnson",
-          "email": "alicejohnson@example.com"
-        }
-      ]
+  const employeeInfo = JSON.parse(localStorage.getItem('employees')) || [
+    { id: 1, name: 'John Doe', email: 'johndoe@example.com' },
+    { id: 2, name: 'Jane Smith', email: 'janesmith@example.com' },
+    { id: 3, name: 'Alice Johnson', email: 'alicejohnson@example.com' },
+  ];
 
       const [employeeData,setEmployeeData]=useState(employeeInfo);
       const [name,setName]=useState('');
@@ -41,9 +30,12 @@ function Employee() {
       const [searchData,setSearchData]=useState(" ");
       const filterdData=employeeData.filter((items)=>(items.name.toLowerCase().includes(searchData.toLowerCase())))
 
-
+      useEffect(() => {
+        localStorage.setItem('employees', JSON.stringify(employeeData));
+      }, [employeeData]);
       const deleteOne=(id)=>{
         setEmployeeData(employeeData.filter((values)=>(values.id!==id)));
+        toast.error("task deleted");
       }
 
       const addEmployee=()=>{
@@ -53,9 +45,12 @@ function Employee() {
       {
         setEmployeeData(employeeData.map((values)=>(values.id===isEdit?{...values,name,email}:values)));
         setIsEdit(null);
+        toast.success("Employee infomation updated")
+
       }
         else{
             setEmployeeData([newEmployee,...employeeData]);
+            toast.success("Employee added")
         }
 
         setEmail('');
